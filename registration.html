@@ -14,6 +14,7 @@
     {
       document.getElementById("my2").play(); 
     
+
     
     }
   </script>
@@ -119,13 +120,6 @@
            audio5.src="./teachers.mp3";
   
           </script>
-
-
-
-
-
-
-      
         <li><a href="contact.html" onkeyup="audio6.play();" onkeydown="audio6.pause();" tabindex="6" >Contact</a></li>
 
         <script type="text/Javascript">
@@ -211,7 +205,7 @@
                 <i class="bi bi-envelope"></i>
                 <button id="start-btn2" class="get-started-btn" onkeyup="audio21.play();" onkeydown="audio21.pause();" tabindex="13">write email
                 
-                
+          
                 
                 </button>
              
@@ -594,5 +588,120 @@
 <!--<script src="script2.js"></script>
 -->
 <script src="text2speech.js"></script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+  } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+  import {
+    getDatabase,
+    set,
+    ref,
+    update,
+    doc,
+    setDoc
+  } from "firebase/firestore";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZtataR_ti4gloRUxAiFAHOJH8IFR-qhM",
+    authDomain: "garaadkaab-a543c.firebaseapp.com",
+    databaseURL:
+      "https://garaadkaab-a543c-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "garaadkaab-a543c",
+    storageBucket: "garaadkaab-a543c.appspot.com",
+    messagingSenderId: "598115945296",
+    appId: "1:598115945296:web:5f831f69a4ea287bf4ba55",
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
+  const database = getDatabase(app);
+
+  sub.addEventListener("click", async (e) => {
+    
+    var name = document.getElementById("textbox").value;
+    var email = document.getElementById("textbox2").value;
+    var username= document.getElementById("textbox3").value;
+    var password = document.getElementById("textbox4").value;
+
+
+      // // Add a new document in collection "cities"
+      // await setDoc(doc(db, "users/"), {
+      //   name: name,
+      //   email: email,
+      //   username: username,
+      //   password: password,
+      // });
+
+
+    //sign up user
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // ... user.uid
+        set(ref(database, "users/" + user.uid), {
+          email: email,
+          password: password,
+        })
+          .then(() => {
+            // Data saved successfully!
+            alert("user created successfully");
+          })
+          .catch((error) => {
+            // The write failed...
+            alert(error);
+          });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        
+        alert(errorMessage);
+      });
+
+    // log in user
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // ...
+
+        // save log in details into real time database
+        var lgDate = new Date();
+        update(ref(database, "users/" + user.uid), {
+          last_login: lgDate,
+        })
+          .then(() => {
+            // Data saved successfully!
+            alert("user logged in successfully");
+          })
+          .catch((error) => {
+            // The write failed...
+            alert(error);
+          });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(errorMessage);
+      });
+
+    // sign out user
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  });
+</script>
 
 </html>
